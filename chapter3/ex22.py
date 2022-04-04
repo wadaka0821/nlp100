@@ -1,20 +1,14 @@
-import re
+from cgitb import text
 import json
-
-def load_json(filename:str) -> dict[str, str]:
-    with open(filename, 'r') as f:
-        data = json.load(f)
-        return data
-
-def get_sections(text:str) -> list[dict[str, str|int]]:
-    res:list[dict[str, str|int]] = list()
-    match = re.findall(r'(={2,})([^=]+)(={2,})', text)
-    for section in match:
-        res.append({'name':section[1], 'level':len(section[0])-1})
-    return res
+import re
+from typing import Any
 
 if __name__ == '__main__':
     filename = 'wiki-uk.json'
-    text = load_json(filename)['text']
-    sections = get_sections(text)
-    print(sections)
+    json_data:dict[Any, Any]
+    with open(filename, 'r') as f:
+        json_data = json.load(f)
+    text = json_data['text']
+    
+    match = re.findall(r'Category:([^\|\[\]]+)', text)
+    print(match)
