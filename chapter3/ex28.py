@@ -17,9 +17,8 @@ def remove_tag(templates:dict[str,str]) -> dict[str,str]:
 def remove_file(templates:dict[str,str]) -> dict[str,str]:
     removed_templates = deepcopy(templates)
     for field, value in templates.items():
-        print(value)
         value = re.sub(r'\[ファイル:(.+)\|.*', '\\1', value)
-        print(value)
+        removed_templates[field] = value
     return removed_templates
 
 def remove_lang(templates:dict[str,str]) -> dict[str,str]:
