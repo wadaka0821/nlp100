@@ -6,19 +6,15 @@ if __name__ == '__main__':
     norm = ''
     connection = False
     for token in tokens:
-        if token['pos'] == '名詞':
-            if norm and connection:
-                print('{}の{}\n'.format(norm, token['surface']))
-                norm = ''
-            elif not norm and not connection:
-                norm = token['surface']
-            else:
-                norm = ''
-            connection = False
-        elif norm and not connection:
-            if token['surface'] == 'と':
-                connection = True
-        else:
+        if connection:
+            if token['pos'] == '名詞':
+                print('{}と{}\n'.format(norm, token['surface']))
             norm = ''
             connection = False
-                
+        else:
+            if token['pos'] == '名詞':
+                norm = token['surface']
+            elif norm and token['surface'] == 'と':
+                connection = True
+            elif norm:
+                norm = ''

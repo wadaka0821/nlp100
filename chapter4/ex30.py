@@ -1,7 +1,7 @@
 
 def load_mecab(filename:str) -> list[dict[str, str]]:
     res:list[dict[str, str]] = list()
-    with open(filename, 'r') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         for line in f:
             token = line.split('\t')
             if len(token) != 2:
