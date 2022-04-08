@@ -1,0 +1,4 @@
+digraph {
+	node [shape=circle]
+	"科学と" -> "哲学"
+}

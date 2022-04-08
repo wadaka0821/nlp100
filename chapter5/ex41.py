@@ -21,8 +21,17 @@ class Chunk():
     def set_srcs(self, srcs:list[int]) -> None:
         self.srcs = srcs
         
+    def get_srcs(self) -> list[int]:
+        return self.srcs
+        
     def get_idx(self) -> int:
         return self.idx
+    
+    def get_dst(self) -> int:
+        return self.dst
+    
+    def get_morphs(self) -> list[Morph]:
+        return self.morphs
         
     def get_rev_src(self) -> tuple[int, int]:
         return (self.dst, self.idx)
@@ -33,19 +42,24 @@ class Chunk():
                                                                       self.srcs,
                                                                       '\n'.join([str(i) for i in self.morphs]))
         
-def get_chunks(filename:str) -> list[Chunk]:
-    chunks:list[Chunk] = list()
+def get_chunks(filename:str) -> list[list[Chunk]]:
+    all_chunks:list[list[Chunk]] = list()
     srcs:dict[int, list[int]] = dict()
     with open(filename, 'r', encoding='utf-8') as f:
-        for _ in range(4):
-            f.readline()
+        chunks:list[Chunk] = list()
         chunk:list[str] = list()
         for line in f:
             if line == 'EOS\n':
                 if chunk:
                     chunks.append(Chunk(chunk))
+                    for c in chunks:
+                        if c.get_idx() in srcs:
+                            c.set_srcs(srcs[c.get_idx()])
+                    srcs = dict()
+                    all_chunks.append(chunks)
+                    chunks = list()
                     chunk = list()
-                break
+                continue
             elif line[0] == '*':
                 if chunk:
                     new_chunk = Chunk(chunk)
@@ -63,16 +77,13 @@ def get_chunks(filename:str) -> list[Chunk]:
             else:
                 chunk.append(line)
     
-    for c in chunks:
-        if c.get_idx() in srcs:
-            c.set_srcs(srcs[c.get_idx()])
-    
-    return chunks
+    return all_chunks
         
 if __name__ == '__main__':
     filename = 'ai.ja.txt.parsed'
-    chunks = get_chunks(filename)
-    for chunk in chunks:
-        print('-'*60)
-        print(chunk)
-    
+    all_chunks = get_chunks(filename)
+    for chunks in all_chunks:
+        for chunk in chunks:
+            print('-'*60)
+            print(chunk)
+        print()

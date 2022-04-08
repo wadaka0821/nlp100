@@ -15,6 +15,15 @@ class Morph():
         self.pos = info[0]
         self.pos1 = info[1]
         
+    def get_surface(self) -> str:
+        return self.surface
+    
+    def get_pos(self) -> str:
+        return self.pos
+    
+    def get_base(self) -> str:
+        return self.base
+        
     def __str__(self):
         return '表層系:{} 基本形:{} 品詞:{} 品詞細分類1:{}'.format(self.surface, self.base, self.pos, self.pos1)
         
