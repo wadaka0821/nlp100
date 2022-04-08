@@ -23,6 +23,9 @@ class Morph():
     
     def get_base(self) -> str:
         return self.base
+    
+    def get_pos1(self) -> str:
+        return self.pos1
         
     def __str__(self):
         return '表層系:{} 基本形:{} 品詞:{} 品詞細分類1:{}'.format(self.surface, self.base, self.pos, self.pos1)
