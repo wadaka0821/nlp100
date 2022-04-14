@@ -16,7 +16,7 @@ if __name__ == '__main__':
     simple_nn = SimpleNN()
     
     criterion = CrossEntropyLoss()
-    optimizer = SGD(simple_nn.parameters(), lr=0.6)
+    optimizer = SGD(simple_nn.parameters(), lr=2.1)
     
     max_epoch = 2000
     for epoch in range(max_epoch):
