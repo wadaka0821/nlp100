@@ -1,3 +1,4 @@
+from sys import maxsize
 from nltk.tokenize import word_tokenize
 from collections import Counter
 import pickle
@@ -10,11 +11,11 @@ def make_vocablary(filename='../chapter6/data/train.txt'):
         words = sorted([[key, value] for key, value in counter.items() if value > 1], key=lambda x:x[::-1], reverse=True)
         return {j[0]:i for i, j in enumerate(words, 1)}
     
-def vectorize(text, vocab):
+def vectorize(text, vocab, max_size=300):
     words = list(map(lambda x:x.lower(), word_tokenize(text)))
-    tokens = np.zeros((len(words), len(vocab)+1))
+    tokens = np.zeros((len(words), max_size))
     for i, word in enumerate(words):
-        if word in vocab:
+        if word in vocab and vocab[word] < max_size:
             tokens[i, vocab[word]] = 1
         else:
             tokens[i, 0] = 1
