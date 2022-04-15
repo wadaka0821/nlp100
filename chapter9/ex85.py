@@ -1,4 +1,3 @@
-from ex80 import vectorize
 from ex81 import MyRNN
 import numpy as np
 import pandas as pd
@@ -7,6 +6,14 @@ import torch
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
 from sklearn.metrics import accuracy_score
+import nltk
+import sys
+
+sys.path.append('../chapter7')
+from ex60 import load_from_pickle
+
+vectorizer = load_from_pickle('../chapter7/dic/word2vec.pickle')
+#nltk.download('punkt')
 
 def get_batch(X, Y, idx, batch_size):
     if idx < len(X):
@@ -14,6 +21,16 @@ def get_batch(X, Y, idx, batch_size):
     else:
         return list(), list()
 
+def vectorize(text, seq_size):
+    embedding_dim = 300
+    tokens = nltk.word_tokenize(text)
+    if len(tokens) > seq_size:
+        tokens = tokens[:seq_size]
+    tokens = np.array([vectorizer[token] if token in vectorizer else np.zeros((embedding_dim, )) for token in tokens])
+    if len(tokens) < seq_size:
+        tokens = np.concatenate([tokens, np.zeros((seq_size - len(tokens), embedding_dim))], axis=0)
+    return tokens
+    
 if __name__ == '__main__':
     vocab = None
     with open('vocab.pickle', 'rb') as f:
@@ -22,13 +39,13 @@ if __name__ == '__main__':
     batch_size = 100
     hidden_size = 100
     seq_size = 20
-    rnn = MyRNN(embedding_dim=300, hidden_dim=hidden_size)
+    rnn = MyRNN(embedding_dim=300, hidden_dim=hidden_size, bidirectional=True, num_layers=3)
     criterion = CrossEntropyLoss()
     optimizer = SGD(rnn.parameters(), lr=2e-3)
     
     train_data = pd.read_table('../chapter6/data/train.txt', encoding='utf-8', index_col=0)
     train_X = train_data.iloc[:, 0]
-    train_X = np.array([vectorize(text, vocab, 300, seq_size) for text in train_X])
+    train_X = np.array([vectorize(text, seq_size) for text in train_X])
     train_X = torch.from_numpy(train_X).float()
     
     mapping = {'e':0, 'b':1, 't':2, 'm':3}
@@ -37,7 +54,7 @@ if __name__ == '__main__':
     
     test_data = pd.read_table('../chapter6/data/test.txt', encoding='utf-8', index_col=0)
     test_X = test_data.iloc[:, 0]
-    test_X = np.array([vectorize(text, vocab, 300, seq_size) for text in test_X])
+    test_X = np.array([vectorize(text, seq_size) for text in test_X])
     test_X = torch.from_numpy(test_X).float()
     
     test_Y = test_data.iloc[:, 1]
