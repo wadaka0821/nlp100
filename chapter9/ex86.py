@@ -7,14 +7,13 @@ from torch.nn import Conv2d, MaxPool2d, Linear, Softmax, Flatten, Module
 from ex85 import vectorize
 
 class CNN(Module):
-    def __init__(self) -> None:
+    def __init__(self, conv_channel1=3, conv_channel2=3, conv_kernel1=3, conv_kernel2=3) -> None:
         super(CNN, self).__init__()
         
-        self.conv1 = Conv2d(1, 3, (3, 300), padding=(2, 0))
+        self.conv1 = Conv2d(1, conv_channel1, (conv_kernel1, 300), padding=(2, 0))
         self.pool1 = MaxPool2d((3, 1))
-        self.conv2 = Conv2d(3, 3, (3, 1), padding=(2, 0))
-        self.flatten = Flatten()
-        self.linear = Linear(9, 4)
+        self.conv2 = Conv2d(conv_channel1, conv_channel2, (conv_kernel2, 1), padding=(2, 0))
+        self.linear = Linear(conv_channel2 * (int((int((20 - conv_kernel1 + 5)/3) - conv_kernel2 + 5)/3)), 4)
         self.softmax = Softmax(dim=1)
         
     def forward(self, X):
